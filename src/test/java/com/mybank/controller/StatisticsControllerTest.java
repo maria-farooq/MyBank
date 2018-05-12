@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,10 @@ public class StatisticsControllerTest {
 				.andExpect(jsonPath("$.max", is("10")))
 				.andExpect(jsonPath("$.min", is("10")))
 				.andExpect(jsonPath("$.count", is("5")));
+		
+		//sleep for 60 seconds and recalculate the statistics
+		Thread.sleep(60000);
+		Assert.fail("TODO");
     }
 	
 	/**
@@ -75,7 +80,15 @@ public class StatisticsControllerTest {
 	 * @throws Exception
 	 */
 	private void createOlderTransaction(final double amount) throws Exception {
-		createTransaction(amount, (System.currentTimeMillis()-66000));
+		final Long timestamp = System.currentTimeMillis()-66000;
+		
+		mvc.perform(MockMvcRequestBuilders.post("/transactions")
+				.accept(MediaType.APPLICATION_JSON)
+    			.content(objectMapper.writeValueAsBytes(new Transaction(amount, timestamp)))
+	            .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isNoContent());
+	
 	}
 
 	/**
