@@ -38,7 +38,7 @@ public class TransactionControllerTest {
 	 * </p> Http method: <b>POST</b>
 	 * </p> <b>Given: </b>
 	 * </p> 1. valid amount
-	 * </p> 2. current timestamp in milliseconds
+	 * </p> 2. valid timestamp within last 60 seconds
 	 * </p> <b>Expected: </b>
 	 * </p> Empty body with Http status 201
 	 * </p>
@@ -46,13 +46,24 @@ public class TransactionControllerTest {
 	 */
 	@Test
     public void postTransaction() throws Exception {
+		
+		final long currentTime = System.currentTimeMillis(); 
 
 		mvc.perform(MockMvcRequestBuilders.post("/transactions")
 				.accept(MediaType.APPLICATION_JSON)
-    			.content(objectMapper.writeValueAsBytes(new Transaction(12.3, System.currentTimeMillis())))
+    			.content(objectMapper.writeValueAsBytes(new Transaction(12.3, currentTime)))
 	            .contentType(MediaType.APPLICATION_JSON))
 				.andDo(print())
-				.andExpect(status().isCreated());			
+				.andExpect(status().isCreated());	
+		
+		final long twentySecondsAgo = System.currentTimeMillis() - 20000; 
+
+		mvc.perform(MockMvcRequestBuilders.post("/transactions")
+				.accept(MediaType.APPLICATION_JSON)
+    			.content(objectMapper.writeValueAsBytes(new Transaction(12.3, twentySecondsAgo)))
+	            .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isCreated());		
     }
 	
 	/**
@@ -67,13 +78,13 @@ public class TransactionControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-    public void postTransactionWithTimeOlderThan60Seconds() throws Exception{
+    public void postTransactionWithTimeOlderThan60Seconds() throws Exception {
 
-		long timeOlderThan60Seconds = System.currentTimeMillis() - (61000); 
+		final long sixtyOneSecondsAgo = System.currentTimeMillis() - (61000); 
 		
 		mvc.perform(MockMvcRequestBuilders.post("/transactions")
 				.accept(MediaType.APPLICATION_JSON)
-    			.content(objectMapper.writeValueAsBytes(new Transaction(12.3, timeOlderThan60Seconds)))
+    			.content(objectMapper.writeValueAsBytes(new Transaction(12.3, sixtyOneSecondsAgo)))
 	            .contentType(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isNoContent());			
@@ -91,9 +102,9 @@ public class TransactionControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-    public void postTransactionWithTimeInFurture() throws Exception{
+    public void postTransactionWithTimeInFurture() throws Exception {
 
-		long timeInFuture = System.currentTimeMillis() + (61000); 
+		final long timeInFuture = System.currentTimeMillis() + (61000); 
 		
 		mvc.perform(MockMvcRequestBuilders.post("/transactions")
 				.accept(MediaType.APPLICATION_JSON)
@@ -102,4 +113,5 @@ public class TransactionControllerTest {
 				.andDo(print())
 				.andExpect(status().isBadRequest());			
     }
+	
 }
