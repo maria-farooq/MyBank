@@ -12,12 +12,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
+	private final int seconds = 59; 
 	/**
 	 * Each index represent a second in last one minute.
 	 * and it will contain statistics of transactions happened in that second.
 	 * </p>Space cost is constant 60 units of elements.
 	 */
-	final private Vector<Statistics> sixtySecondStatistics = new Vector<>(59);
+	private final Vector<Statistics> sixtySecondStatistics = new Vector<>(seconds);
 	
 	private static StatisticsManager statisticsVector = null;
 	
@@ -29,7 +30,7 @@ public class StatisticsManager {
 	}
 	
 	private StatisticsManager(){
-		
+		for (int i=0; i<59; i++) sixtySecondStatistics.add(i, null);
 	}
 	
 	/**
@@ -38,7 +39,8 @@ public class StatisticsManager {
 	 * @param transaction
 	 */
 	public void submitTransaction (final Transaction transaction) {
-		if (transaction.getTimestamp() > (System.currentTimeMillis()-60000)){
+		LOG.info("submitTransaction: "+transaction);
+		if (transaction.getTimestamp() < (System.currentTimeMillis()-60000)){
 			//discard this as its already older than 60 seconds so its not helpful in statistics
 		} else {
 			// find out the index
@@ -55,16 +57,17 @@ public class StatisticsManager {
 	 * Statistics
 	 */
 	public Statistics getStatistics() {
+		LOG.info("getStatistics Called");
 		Double currentMin = 0.0;
 		Double currentMax = 0.0;
 		Double sum = 0.0;
 		Double avg;
 		Long count = 0L;
 
-		for(int i=0; i<sixtySecondStatistics.size(); i++) {
+		for(int i=0; i<seconds; i++) {
 
 			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
-
+			LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
 			if (currentStatisticsElement != null) {
 				//re evaluate max
 				final Double nextIndexMax = currentStatisticsElement.getMax();
@@ -79,6 +82,8 @@ public class StatisticsManager {
 				//update sum and count
 				sum += currentStatisticsElement.getSum();
 				count += currentStatisticsElement.getCount();
+
+				LOG.info(String.format("sum: %s, min: %s, max: %s, count: %s", sum, currentMin, currentMax, count));
 			}
 		}
 		
@@ -87,8 +92,9 @@ public class StatisticsManager {
 			avg = sum/count;
 		else
 			avg = sum;
-		
-		return new Statistics(sum, avg, currentMax, currentMin, count);
+		Statistics statistics = new Statistics(sum, avg, currentMax, currentMin, count);
+		LOG.info("Returning: "+statistics);
+		return statistics;
 	}
 	
 	/**
@@ -96,7 +102,11 @@ public class StatisticsManager {
 	 * @param transaction
 	 */
 	private void updateStatisticsVectorIndex(final int index, final Transaction transaction){
+		LOG.info("updateStatisticsVectorIndex: "+transaction+ ": index: "+index);
+		LOG.info("updateStatisticsVectorIndex sixtySecondStatistics size: "+sixtySecondStatistics.size());
+		LOG.info("updateStatisticsVectorIndex sixtySecondStatistics: "+sixtySecondStatistics);
 		final Statistics currentStatistics = sixtySecondStatistics.get(index);
+		LOG.info("index: "+index+" currentStatistics: "+currentStatistics);
 		
 		final Double newTransactionAmount = transaction.getAmount();
 		
@@ -105,30 +115,34 @@ public class StatisticsManager {
 		 * and initialize index with base statistics
 		 */
 		if (currentStatistics == null) {
-			sixtySecondStatistics.add(index, new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L));
+			Statistics newStatistics = new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L);
+			sixtySecondStatistics.add(index, newStatistics);
+			LOG.info("created new stat: "+newStatistics);
 		} else {
 			final Long newCount = currentStatistics.getCount()+1;
 			final Double newSum = currentStatistics.getSum()+newTransactionAmount;
 			final Double newMin = newTransactionAmount < currentStatistics.getMin() ? newTransactionAmount : currentStatistics.getMin();
 			final Double newMax = newTransactionAmount > currentStatistics.getMax() ? newTransactionAmount : currentStatistics.getMax();
 			final Double newAvg = newSum/newCount;
-			sixtySecondStatistics.add(index, new Statistics(newSum, newAvg, newMax, newMin, newCount));
+			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount);
+			sixtySecondStatistics.add(index, newStatistics);
+			LOG.info("updated existing stats: "+newStatistics +" on index: "+index);
 		}
 	}
 	
 	/**
 	 * shifts the vector to right. drops last item and empties first index.
 	 */
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelay = 1000, initialDelay=1000)
 	private void shiftVectorToRight() {
 		LOG.info("shiftVectorToRight");
-		int i=sixtySecondStatistics.size();
+		int i=seconds;
 		do{
-			sixtySecondStatistics.add(i, sixtySecondStatistics.elementAt(i-1));
+			final Statistics leftElement = sixtySecondStatistics.elementAt(i-1);
+			// since vector is shifting to right, lets empty the left index
+			sixtySecondStatistics.add(i-1, null);
+			sixtySecondStatistics.add(i, leftElement);
 		} while (i>0);
-		
-		//since all vector is shifted to right, lets empty the first index
-		sixtySecondStatistics.add(0, null);
 	}
 
 	/*@Override

@@ -51,22 +51,21 @@ public class StatisticsControllerTest {
 		// create 5 transactions within 60 seconds and 5 older than 60 seconds; each of amount=10
 
 		final double amount = 10;
-		final long currentTimeMillis = System.currentTimeMillis();
 		
 		for(int i=1; i<=5; i++) {
-			createTransaction(amount, currentTimeMillis);
-			createOlderTransaction(amount);
+			createTransaction(amount, System.currentTimeMillis());
+			createOlderTransaction(1);
 		}
 
 		mvc.perform(MockMvcRequestBuilders.get("/statistics")
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.sum", is("50")))
-                .andExpect(jsonPath("$.avg", is("10")))
-				.andExpect(jsonPath("$.max", is("10")))
-				.andExpect(jsonPath("$.min", is("10")))
-				.andExpect(jsonPath("$.count", is("5")));
+				.andExpect(jsonPath("$.sum", is(50)))
+                .andExpect(jsonPath("$.avg", is(10)))
+				.andExpect(jsonPath("$.max", is(10)))
+				.andExpect(jsonPath("$.min", is(10)))
+				.andExpect(jsonPath("$.count", is(5)));
 		
 		//sleep for 60 seconds and recalculate the statistics
 		Thread.sleep(60000);
