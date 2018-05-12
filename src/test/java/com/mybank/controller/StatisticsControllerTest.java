@@ -69,7 +69,16 @@ public class StatisticsControllerTest {
 		
 		//sleep for 60 seconds and recalculate the statistics
 		Thread.sleep(60000);
-		Assert.fail("TODO");
+
+		mvc.perform(MockMvcRequestBuilders.get("/statistics")
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.sum", is(0.0)))
+                .andExpect(jsonPath("$.avg", is(0.0)))
+				.andExpect(jsonPath("$.max", is(0.0)))
+				.andExpect(jsonPath("$.min", is(0.0)))
+				.andExpect(jsonPath("$.count", is(0)));
     }
 	
 	/**

@@ -1,4 +1,4 @@
-package com.mybank.datatransferobject;
+package com.mybank.service;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -8,7 +8,12 @@ import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+import com.mybank.datatransferobject.Statistics;
+import com.mybank.datatransferobject.Transaction;
+
+@Component
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
@@ -58,8 +63,8 @@ public class StatisticsManager {
 	 */
 	public Statistics getStatistics() {
 		LOG.info("getStatistics Called");
-		Double currentMin = 0.0;
-		Double currentMax = 0.0;
+		Double currentMin = Double.MAX_VALUE;
+		Double currentMax = Double.MIN_VALUE;
 		Double sum = 0.0;
 		Double avg;
 		Long count = 0L;

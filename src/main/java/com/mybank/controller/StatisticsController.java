@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mybank.datatransferobject.Statistics;
-import com.mybank.transaction.service.StatisticsService;
+import com.mybank.service.StatisticsService;
 
 @RestController
 @RequestMapping("/statistics")
