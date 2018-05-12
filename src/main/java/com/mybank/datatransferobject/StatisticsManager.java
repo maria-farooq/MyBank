@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
-// singelton??
-public class StatisticsCalculator {
+public class StatisticsManager {
 
-	private static Logger LOG = LoggerFactory.getLogger(StatisticsCalculator.class);
+	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
 	/**
 	 * Each index represent a second in last one minute.
 	 * and it will contain statistics of transactions happened in that second.
@@ -20,16 +19,16 @@ public class StatisticsCalculator {
 	 */
 	final private Vector<Statistics> sixtySecondStatistics = new Vector<>(59);
 	
-	private static StatisticsCalculator statisticsVector = null;
+	private static StatisticsManager statisticsVector = null;
 	
-	public static synchronized StatisticsCalculator getStatisticsVector() {
+	public static synchronized StatisticsManager getStatisticsCalculator() {
 	    if (statisticsVector == null) {
-	    	statisticsVector = new StatisticsCalculator();
+	    	statisticsVector = new StatisticsManager();
 	    }
 	    return statisticsVector;
 	}
 	
-	private StatisticsCalculator(){
+	private StatisticsManager(){
 		
 	}
 	

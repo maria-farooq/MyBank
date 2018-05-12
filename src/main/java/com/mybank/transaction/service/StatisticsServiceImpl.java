@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.mybank.datatransferobject.Statistics;
+import com.mybank.datatransferobject.StatisticsManager;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -13,8 +14,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 	@Override
 	public Statistics getStatistics() {
-		// TODO Auto-generated method stub
-		return null;
+		StatisticsManager statisticsManager = StatisticsManager.getStatisticsCalculator();
+		return statisticsManager.getStatistics();
 	}
 
 }
