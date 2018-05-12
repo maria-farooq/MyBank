@@ -61,10 +61,10 @@ public class StatisticsControllerTest {
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.sum", is(50)))
-                .andExpect(jsonPath("$.avg", is(10)))
-				.andExpect(jsonPath("$.max", is(10)))
-				.andExpect(jsonPath("$.min", is(10)))
+				.andExpect(jsonPath("$.sum", is(50.0)))
+                .andExpect(jsonPath("$.avg", is(10.0)))
+				.andExpect(jsonPath("$.max", is(10.0)))
+				.andExpect(jsonPath("$.min", is(10.0)))
 				.andExpect(jsonPath("$.count", is(5)));
 		
 		//sleep for 60 seconds and recalculate the statistics

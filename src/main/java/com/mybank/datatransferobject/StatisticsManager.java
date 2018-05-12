@@ -125,8 +125,10 @@ public class StatisticsManager {
 			final Double newMax = newTransactionAmount > currentStatistics.getMax() ? newTransactionAmount : currentStatistics.getMax();
 			final Double newAvg = newSum/newCount;
 			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount);
+			sixtySecondStatistics.remove(index);
 			sixtySecondStatistics.add(index, newStatistics);
 			LOG.info("updated existing stats: "+newStatistics +" on index: "+index);
+			LOG.info("sixtySecondStatistics after update: "+sixtySecondStatistics);
 		}
 	}
 	
