@@ -15,6 +15,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mybank.datatransferobject.Transaction;
+
 /**
  * This class will test various use cases of <b>/statistics</b> endpoint.
  * 
@@ -28,6 +31,9 @@ public class StatisticsControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+    ObjectMapper objectMapper;
 	
 	/**
 	 * Endpoint: <b>/statistics</b>
@@ -41,20 +47,50 @@ public class StatisticsControllerTest {
 	@Test
     public void getStatistics() throws Exception {
 
-		final String sum=null;		// TODO: populate properly
-		final String avg=null;		// TODO: populate properly
-		final String max=null;		// TODO: populate properly
-		final String min=null;		// TODO: populate properly
-		final String count=null;	// TODO: populate properly
+		// create 5 transactions within 60 seconds and 5 older than 60 seconds; each of amount=10
+
+		final double amount = 10;
+		final long currentTimeMillis = System.currentTimeMillis();
+		
+		for(int i=1; i<=5; i++) {
+			createTransaction(amount, currentTimeMillis);
+			createOlderTransaction(amount);
+		}
 
 		mvc.perform(MockMvcRequestBuilders.get("/statistics")
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.sum", is(sum)))
-                .andExpect(jsonPath("$.avg", is(avg)))
-				.andExpect(jsonPath("$.max", is(max)))
-				.andExpect(jsonPath("$.min", is(min)))
-				.andExpect(jsonPath("$.count", is(count)));			
+				.andExpect(jsonPath("$.sum", is("50")))
+                .andExpect(jsonPath("$.avg", is("10")))
+				.andExpect(jsonPath("$.max", is("10")))
+				.andExpect(jsonPath("$.min", is("10")))
+				.andExpect(jsonPath("$.count", is("5")));
     }
+	
+	/**
+	 * Create a transaction older than 60 seconds.
+	 * 
+	 * @param amount
+	 * @throws Exception
+	 */
+	private void createOlderTransaction(final double amount) throws Exception {
+		createTransaction(amount, (System.currentTimeMillis()-66000));
+	}
+
+	/**
+	 * Create a transaction with given parameters.
+	 * @param amount
+	 * @param timestamp
+	 * @throws Exception
+	 */
+	private void createTransaction(final double amount, final long timestamp) throws Exception {
+		
+		mvc.perform(MockMvcRequestBuilders.post("/transactions")
+				.accept(MediaType.APPLICATION_JSON)
+    			.content(objectMapper.writeValueAsBytes(new Transaction(amount, timestamp)))
+	            .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isCreated());
+	}
 }
