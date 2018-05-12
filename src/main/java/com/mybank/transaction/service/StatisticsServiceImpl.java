@@ -9,7 +9,7 @@ import com.mybank.datatransferobject.Statistics;
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
-    private static Logger logger = LoggerFactory.getLogger(StatisticsServiceImpl.class);
+    private static Logger LOG = LoggerFactory.getLogger(StatisticsServiceImpl.class);
 
 	@Override
 	public Statistics getStatistics() {
