@@ -13,7 +13,7 @@ public class StatisticsVector implements Runnable {
 	 * and it will contain statistics of transactions happened in that second.
 	 * </p>Space cost is constant 60 units of elements.
 	 */
-	final private Vector<Statistics> statistics = new Vector<>(60);
+	final private Vector<Statistics> sixtySecondStatistics = new Vector<>(60);
 	
 	/**
 	 * This will look at the time and will update the vector index accordingly
@@ -35,7 +35,7 @@ public class StatisticsVector implements Runnable {
 	 * @param transaction
 	 */
 	private void updateStatisticsVectorIndex(final int index, final Transaction transaction){
-		final Statistics currentStatistics = statistics.get(index);
+		final Statistics currentStatistics = sixtySecondStatistics.get(index);
 		
 		final Double newTransactionAmount = transaction.getAmount();
 		
@@ -44,14 +44,14 @@ public class StatisticsVector implements Runnable {
 		 * and initialize index with base statistics
 		 */
 		if (currentStatistics == null) {
-			statistics.add(index, new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L));
+			sixtySecondStatistics.add(index, new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L));
 		} else {
 			final Long newCount = currentStatistics.getCount()+1;
 			final Double newSum = currentStatistics.getSum()+newTransactionAmount;
 			final Double newMin = newTransactionAmount < currentStatistics.getMin() ? newTransactionAmount : currentStatistics.getMin();
 			final Double newMax = newTransactionAmount > currentStatistics.getMax() ? newTransactionAmount : currentStatistics.getMax();
 			final Double newAvg = newSum/newCount;
-			statistics.add(index, new Statistics(newSum, newAvg, newMax, newMin, newCount));
+			sixtySecondStatistics.add(index, new Statistics(newSum, newAvg, newMax, newMin, newCount));
 		}
 	}
 	
@@ -68,9 +68,9 @@ public class StatisticsVector implements Runnable {
 		Double avg;
 		Long count = 0L;
 
-		for(int i=0; i<statistics.size(); i++) {
+		for(int i=0; i<sixtySecondStatistics.size(); i++) {
 
-			Statistics currentStatisticsElement = statistics.elementAt(i);
+			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
 
 			if (currentStatisticsElement != null) {
 				//re evaluate max
@@ -102,13 +102,13 @@ public class StatisticsVector implements Runnable {
 	@Override
 	public void run() {
 		// shifts the vector to right and drops last item after every second
-		int i=statistics.size();
+		int i=sixtySecondStatistics.size();
 		do{
-			statistics.add(i, statistics.elementAt(i-1));
+			sixtySecondStatistics.add(i, sixtySecondStatistics.elementAt(i-1));
 		} while (i>0);
 		
 		//since all vector is shifted to right, lets empty the first index
-		statistics.add(0, null);
+		sixtySecondStatistics.add(0, null);
 		
 	}
 }
