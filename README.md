@@ -29,7 +29,7 @@ which will start a webserver (Tomcat) on port 8080 (http://localhost:8080) and s
 
 We can start the application by executing `com.mybank.MybankApplication` class from your IDE.
 
-### Run from CLi
+### Run from Command line
 To run the application from command line use [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) as following:
 
 ```shell
