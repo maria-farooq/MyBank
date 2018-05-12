@@ -7,6 +7,9 @@ The project is based on a small web-service which uses the following technologie
 - Maven
 - Spring Boot
 
+## Roadmap
+[Project roadmap](https://github.com/maria-farooq/MyBank/issues?utf8=%E2%9C%93&q=is%3Aissue)
+
 ## Requirements
 
 For building and running the application you will need:
