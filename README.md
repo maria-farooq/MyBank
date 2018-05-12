@@ -23,7 +23,7 @@ mvn clean install
 
 ## Running the application
 We can run the application locally using various techniques mentioned below, 
-which starts a webserver (Tomcat) on port 8080 (http://localhost:8080) and serves SwaggerUI where can inspect and try existing endpoints.
+which will start a webserver (Tomcat) on port 8080 (http://localhost:8080) and serves SwaggerUI where can inspect and try endpoints.
 
 ### Run from IDE
 
