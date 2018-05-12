@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * This class will test various functionalities of <b>/statistics</b> endpoint
+ * This class will test various use cases of <b>/statistics</b> endpoint.
  * 
  * @author mariafarooq
  *

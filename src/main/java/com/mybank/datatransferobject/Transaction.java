@@ -11,6 +11,8 @@ public class Transaction {
 	 * transaction time in epoch in millis in UTC time zone (this is not current timestamp)
 	 */
 	private Long timestamp;
+	
+	private Transaction(){}
 
 	public Transaction(Double amount, Long timestamp) {
 		super();
