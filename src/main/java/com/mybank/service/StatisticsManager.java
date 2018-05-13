@@ -37,24 +37,7 @@ public class StatisticsManager {
 	private StatisticsManager(){
 		for (int i=0; i<59; i++) sixtySecondStatistics.add(i, null);
 	}
-	
-	/**
-	 * Submit new transaction and it will update the statistics accordingly.
-	 * Transaction older than 60 seconds will be discarded and will have no impact on statistics.
-	 * @param transaction
-	 */
-	public void submitTransaction (final Transaction transaction) {
-		LOG.info("submitTransaction: "+transaction);
-		if (transaction.getTimestamp() < (System.currentTimeMillis()-60000)){
-			//discard this as its already older than 60 seconds so its not helpful in statistics
-		} else {
-			// find out the index
-			ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochMilli(transaction.getTimestamp()), ZoneOffset.UTC);
-			int transactionSecond = z.getSecond();
-			updateStatisticsVectorIndex(transactionSecond, transaction);
-		}
-	}
-	
+
 	/**
 	 * Traverse the vector and calculate statistics
 	 * </p> time cost is: size of the vector = 60 constant units. O(1)
@@ -97,9 +80,26 @@ public class StatisticsManager {
 			avg = sum/count;
 		else
 			avg = sum;
-		Statistics statistics = new Statistics(sum, avg, currentMax, currentMin, count);
+		Statistics statistics = new Statistics(sum, avg, currentMax, currentMin, count, null);
 		LOG.info("Returning: "+statistics);
 		return statistics;
+	}
+	
+	/**
+	 * Submit new transaction and it will update the statistics accordingly.
+	 * Transaction older than 60 seconds will be discarded and will have no impact on statistics.
+	 * @param transaction
+	 */
+	public void submitTransaction (final Transaction transaction) {
+		LOG.info("submitTransaction: "+transaction);
+		if (transaction.getTimestamp() < (System.currentTimeMillis()-60000)){
+			//discard this as its already older than 60 seconds so its not helpful in statistics
+		} else {
+			// find out the index
+			ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochMilli(transaction.getTimestamp()), ZoneOffset.UTC);
+			int transactionSecond = z.getSecond();
+			updateStatisticsVectorIndex(transactionSecond, transaction);
+		}
 	}
 	
 	/**
@@ -120,7 +120,7 @@ public class StatisticsManager {
 		 * and initialize index with base statistics
 		 */
 		if (currentStatistics == null) {
-			Statistics newStatistics = new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L);
+			Statistics newStatistics = new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L, transaction.getTimestamp());
 			sixtySecondStatistics.add(index, newStatistics);
 			LOG.info("created new stat: "+newStatistics);
 		} else {
@@ -129,7 +129,7 @@ public class StatisticsManager {
 			final Double newMin = newTransactionAmount < currentStatistics.getMin() ? newTransactionAmount : currentStatistics.getMin();
 			final Double newMax = newTransactionAmount > currentStatistics.getMax() ? newTransactionAmount : currentStatistics.getMax();
 			final Double newAvg = newSum/newCount;
-			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount);
+			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount, transaction.getTimestamp());
 			sixtySecondStatistics.remove(index);
 			sixtySecondStatistics.add(index, newStatistics);
 			LOG.info("updated existing stats: "+newStatistics +" on index: "+index);
@@ -140,7 +140,7 @@ public class StatisticsManager {
 	/**
 	 * shifts the vector to right. drops last item and empties first index.
 	 */
-	@Scheduled(fixedDelay = 1000, initialDelay=1000)
+	@Scheduled(fixedRate = 1000, initialDelay=1000)
 	private void shiftVectorToRight() {
 		LOG.info("shiftVectorToRight");
 		int i=seconds;
@@ -151,19 +151,25 @@ public class StatisticsManager {
 			sixtySecondStatistics.add(i, leftElement);
 		} while (i>0);
 	}
+	
 
-	/*@Override
-	public void run() {
-		// run in a second
-		final long timeInterval = 1000;
-
-		while (true) {
-			shiftVectorToRight();
-			try {
-				Thread.sleep(timeInterval);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	/**
+	 * We want statistics-vector (sixtySecondStatistics) to hold only statistics of last 60 seconds.
+	 * After each passing second this method will update the index of statistics
+	 * in vector to the correct index as per current time
+	 */
+	@Scheduled(fixedRate = 1000, initialDelay=1000)
+	private void shiftVectorStatistics() {
+		LOG.info("shiftVectorStatistics called");
+		final Vector<Statistics> sixtySecondUpdatedStatistics = new Vector<>(seconds);
+		for (int i=0; i<seconds ; i++){
+			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
+			LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
+			if (currentStatisticsElement != null) {
+				ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentStatisticsElement.getTimestamp()), ZoneOffset.UTC);
+				int transactionSecondIndex = z.getSecond();
+				sixtySecondUpdatedStatistics.add(transactionSecondIndex, currentStatisticsElement);
+			}	
 		}
-	}*/
+	}
 }

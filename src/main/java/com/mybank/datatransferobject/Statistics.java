@@ -1,6 +1,7 @@
 package com.mybank.datatransferobject;
 
-// singelton??
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author mariafarooq
  */
@@ -12,20 +13,25 @@ public class Statistics {
 	private final Double min;
 	private final Long count;
 
+	@JsonIgnore
+	private final Long timestamp;
+
 	/**
 	 * @param sum is a double specifying the total sum of transaction value in the last 60 seconds
 	 * @param avg is a double specifying the average amount of transaction value in the last 60 seconds
 	 * @param max is a double specifying single highest transaction value in the last 60 seconds
 	 * @param min is a double specifying single lowest transaction value in the last 60 seconds
 	 * @param count is a long specifying the total number of transactions happened in the last 60 seconds
+	 * @param timestamp represent state of the statistics at the given second
 	 */
-	public Statistics(final Double sum, final Double avg, final Double max, final Double min, final Long count) {
+	public Statistics(final Double sum, final Double avg, final Double max, final Double min, final Long count, final Long timestamp) {
 		super();
 		this.sum = sum;
 		this.avg = avg;
 		this.max = max;
 		this.min = min;
 		this.count = count;
+		this.timestamp = timestamp;
 	}
 	
 	public Double getSum() {
@@ -43,6 +49,9 @@ public class Statistics {
 	public Long getCount() {
 		return count;
 	}
+	public Long getTimestamp() {
+		return timestamp;
+	}
 
 	@Override
 	public int hashCode() {
@@ -53,6 +62,7 @@ public class Statistics {
 		result = prime * result + ((max == null) ? 0 : max.hashCode());
 		result = prime * result + ((min == null) ? 0 : min.hashCode());
 		result = prime * result + ((sum == null) ? 0 : sum.hashCode());
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		return result;
 	}
 
@@ -90,11 +100,18 @@ public class Statistics {
 				return false;
 		} else if (!sum.equals(other.sum))
 			return false;
+		if (timestamp == null) {
+			if (other.timestamp != null)
+				return false;
+		} else if (!timestamp.equals(other.timestamp))
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Statistics [sum=" + sum + ", avg=" + avg + ", max=" + max + ", min=" + min + ", count=" + count + "]";
+		return "Statistics [sum=" + sum + ", avg=" + avg + ", max=" + max + ", min=" + min + ", count=" + count
+				+ ", timestamp=" + timestamp + "]";
 	}
+
 }
