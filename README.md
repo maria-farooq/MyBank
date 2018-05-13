@@ -87,6 +87,12 @@ O(1)
 ```
 
 #### Keep Only 60 seconds Stats and discard older
+- With every passing second, each statistics in statisticsMetrics gets one second older.
+- As we only need Statistics of last 60 seconds
+- We need to continuously update statisticsMetrics
+- and discard any states for transactions older than 60 seconds
+- following diagram shows the high level design of algorithm to maintain this integrity.
+
 ![updatestatistics](https://github.com/maria-farooq/MyBank/blob/master/images/updatestatistics.png)
 
 ##### Time cost
@@ -104,8 +110,8 @@ O(1)
 ```
 
 #### Handle new transaction
-- Whenever a transaction is posted on `/transaction`
-- Following algo evaluates it
+- Whenever a transaction is posted on `/transaction` endpoint
+- Following algorithm evaluates it
 - if it is older than 60 seconds, we will discard it: meaning that it will have no impact on statistics.
 - otherwise we evaluate its age in seconds (which will be our index in vector)
 - and update the statistics on given index as per new transaction 
