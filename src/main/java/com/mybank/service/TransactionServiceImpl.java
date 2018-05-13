@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
     	if (transaction.getTimestamp() > currentTimeMillis)
     		return -1;
     	
-    	StatisticsManager statisticsManager = StatisticsManager.getStatisticsCalculator();
+    	StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
     	statisticsManager.submitTransaction(transaction);
 		return 0;
 

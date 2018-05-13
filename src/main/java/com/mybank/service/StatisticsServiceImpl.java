@@ -13,7 +13,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 	@Override
 	public Statistics getStatistics() {
-		StatisticsManager statisticsManager = StatisticsManager.getStatisticsCalculator();
+		StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
 		return statisticsManager.getStatistics();
 	}
 

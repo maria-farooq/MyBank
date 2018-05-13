@@ -7,13 +7,10 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import com.mybank.datatransferobject.Statistics;
 import com.mybank.datatransferobject.Transaction;
 
-@Component
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
@@ -23,19 +20,41 @@ public class StatisticsManager {
 	 * and it will contain statistics of transactions happened in that second.
 	 * </p>Space cost is constant 60 units of elements.
 	 */
-	private final Vector<Statistics> sixtySecondStatistics = new Vector<>(seconds);
+	private Vector<Statistics> sixtySecondStatistics = new Vector<>(seconds);
 	
-	private static StatisticsManager statisticsVector = null;
+	private static StatisticsManager statisticsManagerInstance = null;
 	
-	public static synchronized StatisticsManager getStatisticsCalculator() {
-	    if (statisticsVector == null) {
-	    	statisticsVector = new StatisticsManager();
+	public static synchronized StatisticsManager getStatisticsManager() {
+	    if (statisticsManagerInstance == null) {
+	    	statisticsManagerInstance = new StatisticsManager();
 	    }
-	    return statisticsVector;
+	    return statisticsManagerInstance;
 	}
 	
 	private StatisticsManager(){
-		for (int i=0; i<59; i++) sixtySecondStatistics.add(i, null);
+		for (int i=0; i<=seconds; i++) sixtySecondStatistics.add(i, null);
+	}
+
+	void setSixtySecondStatistics(Vector<Statistics> sixtySecondStatistics) {
+		this.sixtySecondStatistics = sixtySecondStatistics;
+	}
+
+	public Vector<Statistics> getSixtySecondStatistics() {
+		return sixtySecondStatistics;
+	}
+
+	public int getSeconds() {
+		return seconds;
+	}
+	
+	public boolean isSixtySecondStatisticsEmpty() {
+		if(sixtySecondStatistics == null || sixtySecondStatistics.isEmpty())
+			return true;
+		for(int i=0; i<= seconds; i++){
+			if(sixtySecondStatistics.get(i) != null)
+				return false;
+		}
+		return true;
 	}
 
 	/**
@@ -46,24 +65,26 @@ public class StatisticsManager {
 	 */
 	public Statistics getStatistics() {
 		LOG.info("getStatistics Called");
-		Double currentMin = Double.MAX_VALUE;
-		Double currentMax = Double.MIN_VALUE;
+		Double currentMin=null;
+		Double currentMax=null;
 		Double sum = 0.0;
 		Double avg;
 		Long count = 0L;
 
-		for(int i=0; i<seconds; i++) {
+		for(int i=0; i<=seconds; i++) {
 
 			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
 			LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
 			if (currentStatisticsElement != null) {
 				//re evaluate max
 				final Double nextIndexMax = currentStatisticsElement.getMax();
+				currentMax = currentMax == null ? nextIndexMax : currentMax;
 				if (nextIndexMax > currentMax)
 					currentMax = nextIndexMax;
 				
 				// re evaluate min
 				final Double nextIndexMin = currentStatisticsElement.getMin();
+				currentMin = currentMin == null ? nextIndexMin : currentMin;
 				if (nextIndexMin < currentMin)
 					currentMin = nextIndexMin;
 
@@ -80,7 +101,7 @@ public class StatisticsManager {
 			avg = sum/count;
 		else
 			avg = sum;
-		Statistics statistics = new Statistics(sum, avg, currentMax, currentMin, count, null);
+		Statistics statistics = new Statistics(sum, avg, currentMax==null?0.0:currentMax, currentMin==null?0.0:currentMin, count, null);
 		LOG.info("Returning: "+statistics);
 		return statistics;
 	}
@@ -140,7 +161,7 @@ public class StatisticsManager {
 	/**
 	 * shifts the vector to right. drops last item and empties first index.
 	 */
-	@Scheduled(fixedRate = 1000, initialDelay=1000)
+	/*@Scheduled(fixedRate = 1000, initialDelay=1000)
 	private void shiftVectorToRight() {
 		LOG.info("shiftVectorToRight");
 		int i=seconds;
@@ -150,26 +171,6 @@ public class StatisticsManager {
 			sixtySecondStatistics.add(i-1, null);
 			sixtySecondStatistics.add(i, leftElement);
 		} while (i>0);
-	}
+	}*/
 	
-
-	/**
-	 * We want statistics-vector (sixtySecondStatistics) to hold only statistics of last 60 seconds.
-	 * After each passing second this method will update the index of statistics
-	 * in vector to the correct index as per current time
-	 */
-	@Scheduled(fixedRate = 1000, initialDelay=1000)
-	private void shiftVectorStatistics() {
-		LOG.info("shiftVectorStatistics called");
-		final Vector<Statistics> sixtySecondUpdatedStatistics = new Vector<>(seconds);
-		for (int i=0; i<seconds ; i++){
-			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
-			LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
-			if (currentStatisticsElement != null) {
-				ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentStatisticsElement.getTimestamp()), ZoneOffset.UTC);
-				int transactionSecondIndex = z.getSecond();
-				sixtySecondUpdatedStatistics.add(transactionSecondIndex, currentStatisticsElement);
-			}	
-		}
-	}
 }

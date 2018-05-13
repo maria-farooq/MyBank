@@ -68,7 +68,7 @@ public class StatisticsControllerTest {
 				.andExpect(jsonPath("$.count", is(5)));
 		
 		//sleep for 60 seconds and recalculate the statistics
-		Thread.sleep(60000);
+		Thread.sleep(65000);
 
 		mvc.perform(MockMvcRequestBuilders.get("/statistics")
 				.accept(MediaType.APPLICATION_JSON))
