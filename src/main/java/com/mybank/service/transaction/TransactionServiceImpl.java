@@ -1,10 +1,11 @@
-package com.mybank.service;
+package com.mybank.service.transaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.mybank.datatransferobject.Transaction;
+import com.mybank.service.statistics.StatisticsManager;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {

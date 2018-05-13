@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mybank.datatransferobject.Transaction;
-import com.mybank.service.TransactionService;
+import com.mybank.service.transaction.TransactionService;
 
 @RestController
 @RequestMapping("/transactions")

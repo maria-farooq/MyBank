@@ -1,4 +1,4 @@
-package com.mybank.service;
+package com.mybank.service.transaction;
 
 import com.mybank.datatransferobject.Transaction;
 

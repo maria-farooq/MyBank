@@ -1,4 +1,4 @@
-package com.mybank.service;
+package com.mybank.service.statistics;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
