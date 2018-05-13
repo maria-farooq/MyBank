@@ -1,0 +1,21 @@
+@startuml
+
+title Update Statistics Metrics Algorithm
+
+start
+
+repeat
+    :newMetricx;\nindex = 0;
+    repeat
+        :currIndexStats = metrix[index];
+        if(currIndexStats.time is OLDER\nthan last 60 Seconds) then (yes)
+            :Discard this stats;
+        else (no)
+            :newIndex = Calculate New Age of\nStats in Seconds;
+            :newMetricx[newIndex] = currIndexStats;
+        endif
+    repeat while (index++ < 60)
+repeat while (After Every One Second)
+
+stop
+@enduml

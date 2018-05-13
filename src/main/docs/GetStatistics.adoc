@@ -3,17 +3,14 @@
 title Get Statistics Algorithm
 
 start
-:{ sum, avg, min, max, count }\nindex = 0\ncurrIndexStats = metrix[index];
+:{ sum, avg, min, max, count }\nindex = 0;
 
 repeat
-    if (currIndexStats.max > max) then (yes)
-        :max = currIndexStats.max;;
-    endif
-    if (currIndexStats.min > min) then (yes)
-        :min = currIndexStats.min;;
-    endif
-  :sum += currIndexStats.sum;;
-  :count ++;;
+    :currIndexStats = metrix[index];
+    :max = mcurrIndexStats.max > max ? currIndexStats.max : max;;
+    :min = currIndexStats.min > min ? currIndexStats.min : min;;
+    :sum += currIndexStats.sum;;
+    :count ++;;
 repeat while (index++ < 60)
 
 stop
