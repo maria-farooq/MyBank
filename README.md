@@ -103,7 +103,23 @@ O(1)
 ```
 
 #### Handle new transaction
+- Whenever a transaction is posted on `/transaction`
+- Following algo evaluates it
+- if it is older than 60 seconds, we will discard it: meaning that it will have no impact on statistics.
+- otherwise we evaluate its age in seconds (which will be our index in vector)
+- and update the statistics on given index as per new transaction 
 
+![submittransaction](https://github.com/maria-farooq/MyBank/blob/master/images/submittransaction.png)
+
+##### Time cost
+```
+O(1)
+```
+
+##### Space cost
+```
+O(1)
+```
 
 ## Acknowledgments
 

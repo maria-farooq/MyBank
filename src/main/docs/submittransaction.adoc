@@ -1,0 +1,24 @@
+@startuml
+
+start
+:submitTransaction(Transaction t) {;
+if(t.time OlderThan lastOneMinute) (yes)
+    :Discard;
+else (no)
+:index = Calculate New Age of\nTransaction in Seconds;
+
+:Statistics s = metrics[index];
+    if(s == null) (yes)
+        :newStatistics = (sum=t.amount, avg=t.amount\nmin==t.amount, max=t.amount\ncount=1);
+        :metrics[index] = newStatistics;
+    else (no)
+        :index = Calculate New Age of\nTransaction in Seconds;
+        :count=s.count+1;\nsum=s.sum+t.amount;\nmax = s.max > amount ? s.max : amount;\nmin = s.min < amount ? s.min : min;\navg=count/sum;;
+        :updatedStatistics = (sum, avg, min, max, count);
+        :metrics[index] = updatedStatistics;
+    endif
+endif
+
+stop
+
+@enduml
