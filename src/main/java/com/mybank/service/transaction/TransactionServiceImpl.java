@@ -2,6 +2,7 @@ package com.mybank.service.transaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mybank.datatransferobject.Transaction;
@@ -11,6 +12,9 @@ import com.mybank.service.statistics.StatisticsManager;
 public class TransactionServiceImpl implements TransactionService {
 
     private static Logger LOG = LoggerFactory.getLogger(TransactionServiceImpl.class);
+
+	@Autowired
+	StatisticsManager statisticsManager;
 
 	/* (non-Javadoc)
 	 * @see com.mybank.transaction.service.TransactionService#postTranscation(com.mybank.datatransferobject.Transaction)
@@ -29,7 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
     		return -1;
     	}
     	
-    	StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
+    	//StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
     	statisticsManager.submitTransaction(transaction);
 		return 0;
 

@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ public class StatisticsUpdateTask {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
 
+	@Autowired
+	StatisticsManager statisticsManager;
+
 	/**
 	 * We want statistics-vector (sixtySecondStatistics) to hold only statistics of last 60 seconds.
 	 * After each passing second this method will update the index of statistics
@@ -31,9 +35,9 @@ public class StatisticsUpdateTask {
 	 */
 	@Scheduled(fixedRate = 1000)
 	private void shiftVectorStatistics() {
-		StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
-		Vector<Statistics> sixtySecondStatistics = statisticsManager.getSixtySecondStatistics();
-		if(!statisticsManager.isSixtySecondStatisticsEmpty()){
+		//StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
+		Vector<Statistics> sixtySecondStatistics = statisticsManager.getsixtySecondStatisticsMetrics();
+		if(!statisticsManager.issixtySecondStatisticsMetricsEmpty()){
 			Vector<Statistics> sixtySecondUpdatedStatistics = new Vector<>(statisticsManager.getSeconds());
 			
 			for (int i=0; i<=statisticsManager.getSeconds(); i++) sixtySecondUpdatedStatistics.add(i, null);
@@ -52,7 +56,7 @@ public class StatisticsUpdateTask {
 				}
 			}
 			LOG.trace(String.format("updated statistics vector: %s", sixtySecondUpdatedStatistics));
-			statisticsManager.setSixtySecondStatistics(sixtySecondUpdatedStatistics);
+			statisticsManager.setsixtySecondStatisticsMetrics(sixtySecondUpdatedStatistics);
 			sixtySecondUpdatedStatistics = null;
 		}
 	}

@@ -24,6 +24,11 @@ We can build the project using mvn as following:
 mvn clean install
 ```
 
+**Please Note!**
+
+One of the tests sleeps for about a minute to test that statistics are relevant upto 60 seconds.
+So `mvn clean install` or running the `StatisticsControllerTest` class can take a minute longer than normal.
+
 ## Running the application
 We can run the application locally using various techniques mentioned below, 
 which will start a webserver (Tomcat) on port 8080 (http://localhost:8080) and serves SwaggerUI where can inspect and try endpoints.

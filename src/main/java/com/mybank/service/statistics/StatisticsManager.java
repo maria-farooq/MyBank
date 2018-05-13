@@ -7,16 +7,21 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.mybank.datatransferobject.Statistics;
 import com.mybank.datatransferobject.Transaction;
 
 /**
  * StatisticsManager manages the transactions of last 60 seconds;
+ * This class was initially intended to be a java singleton.
+ * For now we are keeping it singleton at spring context level.
+ * So that we have common sixtySecondStatisticsMetrics on application context level
  * 
  * @author mariafarooq
  *
  */
+@Component
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
@@ -26,38 +31,43 @@ public class StatisticsManager {
 	 * and it will contain statistics of transactions happened in that second.
 	 * </p>Space cost is constant 60 units of elements.
 	 */
-	private Vector<Statistics> sixtySecondStatistics = new Vector<>(seconds);
+	private Vector<Statistics> sixtySecondStatisticsMetrics = new Vector<>(seconds);
 	
-	private static StatisticsManager statisticsManagerInstance = null;
+	/*
+	 * This code was here to support java singleton, in case we want to make StatisticsManager on ClassLoader level
+	 * For now we are keeping it singleton at spring context level.
+	 * 
+	 * private static StatisticsManager statisticsManagerInstance = null;
 	
 	public static synchronized StatisticsManager getStatisticsManager() {
 	    if (statisticsManagerInstance == null) {
 	    	statisticsManagerInstance = new StatisticsManager();
 	    }
 	    return statisticsManagerInstance;
-	}
+	}*/
 	
-	private StatisticsManager(){
-		for (int i=0; i<=seconds; i++) sixtySecondStatistics.add(i, null);
+	public StatisticsManager(){
+		LOG.info("StatisticsManager constructor called");
+		for (int i=0; i<=seconds; i++) sixtySecondStatisticsMetrics.add(i, null);
 	}
 
-	void setSixtySecondStatistics(Vector<Statistics> sixtySecondStatistics) {
-		this.sixtySecondStatistics = sixtySecondStatistics;
+	void setsixtySecondStatisticsMetrics(Vector<Statistics> sixtySecondStatisticsMetrics) {
+		this.sixtySecondStatisticsMetrics = sixtySecondStatisticsMetrics;
 	}
 
-	public Vector<Statistics> getSixtySecondStatistics() {
-		return sixtySecondStatistics;
+	public Vector<Statistics> getsixtySecondStatisticsMetrics() {
+		return sixtySecondStatisticsMetrics;
 	}
 
 	public int getSeconds() {
 		return seconds;
 	}
 	
-	public boolean isSixtySecondStatisticsEmpty() {
-		if(sixtySecondStatistics == null || sixtySecondStatistics.isEmpty())
+	public boolean issixtySecondStatisticsMetricsEmpty() {
+		if(sixtySecondStatisticsMetrics == null || sixtySecondStatisticsMetrics.isEmpty())
 			return true;
 		for(int i=0; i<= seconds; i++){
-			if(sixtySecondStatistics.get(i) != null)
+			if(sixtySecondStatisticsMetrics.get(i) != null)
 				return false;
 		}
 		return true;
@@ -78,8 +88,8 @@ public class StatisticsManager {
 
 		for(int i=0; i<=seconds; i++) {
 
-			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
-			LOG.trace(String.format("getStatistics sixtySecondStatistics[%s] is: %s", i, currentStatisticsElement));
+			Statistics currentStatisticsElement = sixtySecondStatisticsMetrics.elementAt(i);
+			LOG.trace(String.format("getStatistics sixtySecondStatisticsMetrics[%s] is: %s", i, currentStatisticsElement));
 			if (currentStatisticsElement != null) {
 				//re evaluate max
 				final Double nextIndexMax = currentStatisticsElement.getMax();
@@ -133,7 +143,7 @@ public class StatisticsManager {
 	 * @param transaction
 	 */
 	private synchronized void updateStatisticsVectorIndex(final int index, final Transaction transaction){
-		final Statistics currentStatistics = sixtySecondStatistics.get(index);
+		final Statistics currentStatistics = sixtySecondStatisticsMetrics.get(index);
 		
 		final Double newTransactionAmount = transaction.getAmount();
 		
@@ -143,7 +153,7 @@ public class StatisticsManager {
 		 */
 		if (currentStatistics == null) {
 			Statistics newStatistics = new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L, transaction.getTimestamp());
-			sixtySecondStatistics.add(index, newStatistics);
+			sixtySecondStatisticsMetrics.add(index, newStatistics);
 			LOG.debug(String.format("Created new statistics %s at index %s ", newStatistics, index));
 		} else {
 			final Long newCount = currentStatistics.getCount()+1;
@@ -152,8 +162,8 @@ public class StatisticsManager {
 			final Double newMax = newTransactionAmount > currentStatistics.getMax() ? newTransactionAmount : currentStatistics.getMax();
 			final Double newAvg = newSum/newCount;
 			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount, transaction.getTimestamp());
-			sixtySecondStatistics.remove(index);
-			sixtySecondStatistics.add(index, newStatistics);
+			sixtySecondStatisticsMetrics.remove(index);
+			sixtySecondStatisticsMetrics.add(index, newStatistics);
 			LOG.debug(String.format("Updated index %s. Replaced old statistics %s with new %s", index,currentStatistics, newStatistics));
 		}
 	}
