@@ -14,8 +14,8 @@ import com.mybank.datatransferobject.Transaction;
 
 /**
  * StatisticsManager manages the transactions of last 60 seconds;
- * This class was initially intended to be a java singleton.
- * For now we are keeping it singleton at spring context level.
+ * This class was initially intended to be a java singleton class.
+ * Later I decided on keeping it singleton at spring context level to support various test scenarios.
  * So that we have common sixtySecondStatisticsMetrics on application context level
  * 
  * @author mariafarooq
