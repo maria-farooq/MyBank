@@ -64,29 +64,7 @@ Get Statistics is need for our /statistics endpoint where user wants to see stat
 - We need to traverse and accumulate the complete metrics.
 - We 
 
-@startuml
-
-title Get Statistics Algorithm
-
-start
-:{ sum, avg, min, max, count }\nindex = 0\ncurrIndexStats = metrix[index];
-
-repeat
-    if (currIndexStats.max > max) then (yes)
-        :max = currIndexStats.max;;
-    endif
-    if (currIndexStats.min > min) then (yes)
-        :min = currIndexStats.min;;
-    endif
-  :sum += currIndexStats.sum;;
-  :count ++;;
-repeat while (index++ < 60)
-
-stop
-:avg=sum/count;
-:return new Statistics(sum, avg, min, max, count);
-
-@enduml
+![alt text](http://url/to/img.png)
 
 #### Handle new transaction
 
