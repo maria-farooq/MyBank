@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 import com.mybank.datatransferobject.Statistics;
 import com.mybank.datatransferobject.Transaction;
 
+/**
+ * StatisticsManager manages the transactions of last 60 seconds;
+ * 
+ * @author mariafarooq
+ *
+ */
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
@@ -126,7 +132,7 @@ public class StatisticsManager {
 	 * @param index
 	 * @param transaction
 	 */
-	private void updateStatisticsVectorIndex(final int index, final Transaction transaction){
+	private synchronized void updateStatisticsVectorIndex(final int index, final Transaction transaction){
 		final Statistics currentStatistics = sixtySecondStatistics.get(index);
 		
 		final Double newTransactionAmount = transaction.getAmount();

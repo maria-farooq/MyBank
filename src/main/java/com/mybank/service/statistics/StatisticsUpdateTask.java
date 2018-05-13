@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.mybank.datatransferobject.Statistics;
 
 /**
- * This class is responsible for keeping statistics relevant upto last one minute.
+ * StatisticsUpdateTask is responsible for keeping statistics relevant upto last one minute.
  * 
  * @author mariafarooq
  *
