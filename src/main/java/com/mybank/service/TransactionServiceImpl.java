@@ -19,10 +19,14 @@ public class TransactionServiceImpl implements TransactionService {
 		final long currentTimeMillis = System.currentTimeMillis();
     	final long sixtySecondsAgo = currentTimeMillis - 60000;
 
-    	if (transaction.getTimestamp() < sixtySecondsAgo)
+    	if (transaction.getTimestamp() < sixtySecondsAgo){
+    		LOG.debug("Transaction is older than a minute");
     		return 1;
-    	if (transaction.getTimestamp() > currentTimeMillis)
+    	}
+    	if (transaction.getTimestamp() > currentTimeMillis){
+    		LOG.debug("Transaction is in future");
     		return -1;
+    	}
     	
     	StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
     	statisticsManager.submitTransaction(transaction);

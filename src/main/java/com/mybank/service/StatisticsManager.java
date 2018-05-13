@@ -64,7 +64,6 @@ public class StatisticsManager {
 	 * Statistics
 	 */
 	public Statistics getStatistics() {
-		LOG.info("getStatistics Called");
 		Double currentMin=null;
 		Double currentMax=null;
 		Double sum = 0.0;
@@ -74,7 +73,7 @@ public class StatisticsManager {
 		for(int i=0; i<=seconds; i++) {
 
 			Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
-			LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
+			LOG.trace(String.format("getStatistics sixtySecondStatistics[%s] is: %s", i, currentStatisticsElement));
 			if (currentStatisticsElement != null) {
 				//re evaluate max
 				final Double nextIndexMax = currentStatisticsElement.getMax();
@@ -92,7 +91,7 @@ public class StatisticsManager {
 				sum += currentStatisticsElement.getSum();
 				count += currentStatisticsElement.getCount();
 
-				LOG.info(String.format("sum: %s, min: %s, max: %s, count: %s", sum, currentMin, currentMax, count));
+				LOG.trace(String.format("sum: %s, min: %s, max: %s, count: %s", sum, currentMin, currentMax, count));
 			}
 		}
 		
@@ -102,7 +101,7 @@ public class StatisticsManager {
 		else
 			avg = sum;
 		Statistics statistics = new Statistics(sum, avg, currentMax==null?0.0:currentMax, currentMin==null?0.0:currentMin, count, null);
-		LOG.info("Returning: "+statistics);
+		LOG.trace(String.format("getStatistics is returning: %s", statistics));
 		return statistics;
 	}
 	
@@ -112,9 +111,9 @@ public class StatisticsManager {
 	 * @param transaction
 	 */
 	public void submitTransaction (final Transaction transaction) {
-		LOG.info("submitTransaction: "+transaction);
-		if (transaction.getTimestamp() < (System.currentTimeMillis()-60000)){
-			//discard this as its already older than 60 seconds so its not helpful in statistics
+		LOG.debug(String.format("Submitting new Transaction in statistics %s", transaction));
+		if (transaction.getTimestamp() < (System.currentTimeMillis()-60000)) {
+			LOG.debug(String.format("Discard this transaction %s as its already older than 60 seconds so its not helpful in statistics", transaction));
 		} else {
 			// find out the index
 			ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochMilli(transaction.getTimestamp()), ZoneOffset.UTC);
@@ -128,11 +127,7 @@ public class StatisticsManager {
 	 * @param transaction
 	 */
 	private void updateStatisticsVectorIndex(final int index, final Transaction transaction){
-		LOG.info("updateStatisticsVectorIndex: "+transaction+ ": index: "+index);
-		LOG.info("updateStatisticsVectorIndex sixtySecondStatistics size: "+sixtySecondStatistics.size());
-		LOG.info("updateStatisticsVectorIndex sixtySecondStatistics: "+sixtySecondStatistics);
 		final Statistics currentStatistics = sixtySecondStatistics.get(index);
-		LOG.info("index: "+index+" currentStatistics: "+currentStatistics);
 		
 		final Double newTransactionAmount = transaction.getAmount();
 		
@@ -143,7 +138,7 @@ public class StatisticsManager {
 		if (currentStatistics == null) {
 			Statistics newStatistics = new Statistics(newTransactionAmount, newTransactionAmount, newTransactionAmount, newTransactionAmount, 1L, transaction.getTimestamp());
 			sixtySecondStatistics.add(index, newStatistics);
-			LOG.info("created new stat: "+newStatistics);
+			LOG.debug(String.format("Created new statistics %s at index %s ", newStatistics, index));
 		} else {
 			final Long newCount = currentStatistics.getCount()+1;
 			final Double newSum = currentStatistics.getSum()+newTransactionAmount;
@@ -153,24 +148,8 @@ public class StatisticsManager {
 			Statistics newStatistics = new Statistics(newSum, newAvg, newMax, newMin, newCount, transaction.getTimestamp());
 			sixtySecondStatistics.remove(index);
 			sixtySecondStatistics.add(index, newStatistics);
-			LOG.info("updated existing stats: "+newStatistics +" on index: "+index);
-			LOG.info("sixtySecondStatistics after update: "+sixtySecondStatistics);
+			LOG.debug(String.format("Updated index %s. Replaced old statistics %s with new %s", index,currentStatistics, newStatistics));
 		}
 	}
-	
-	/**
-	 * shifts the vector to right. drops last item and empties first index.
-	 */
-	/*@Scheduled(fixedRate = 1000, initialDelay=1000)
-	private void shiftVectorToRight() {
-		LOG.info("shiftVectorToRight");
-		int i=seconds;
-		do{
-			final Statistics leftElement = sixtySecondStatistics.elementAt(i-1);
-			// since vector is shifting to right, lets empty the left index
-			sixtySecondStatistics.add(i-1, null);
-			sixtySecondStatistics.add(i, leftElement);
-		} while (i>0);
-	}*/
 	
 }

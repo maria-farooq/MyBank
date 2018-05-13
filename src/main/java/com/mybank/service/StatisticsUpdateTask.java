@@ -31,7 +31,6 @@ public class StatisticsUpdateTask {
 	 */
 	@Scheduled(fixedRate = 1000)
 	private void shiftVectorStatistics() {
-		LOG.info("shiftVectorStatistics called");
 		StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
 		Vector<Statistics> sixtySecondStatistics = statisticsManager.getSixtySecondStatistics();
 		if(!statisticsManager.isSixtySecondStatisticsEmpty()){
@@ -40,21 +39,19 @@ public class StatisticsUpdateTask {
 			for (int i=0; i<=statisticsManager.getSeconds(); i++) sixtySecondUpdatedStatistics.add(i, null);
 			
 			for (int i=0; i<=statisticsManager.getSeconds() ; i++) {
-				LOG.info("shiftVectorStatistics called "+i);
 				Statistics currentStatisticsElement = sixtySecondStatistics.elementAt(i);
-				LOG.info("getStatistics sixtySecondStatistics["+i+"] is: "+currentStatisticsElement);
 				if (currentStatisticsElement != null) {
 					int newStatSecondIndex = getAgeOfStatisticsInLastOneMinute(currentStatisticsElement.getTimestamp());
 					// discard stats older than a minute
 					if(newStatSecondIndex>=0) {
 						sixtySecondUpdatedStatistics.add(newStatSecondIndex, currentStatisticsElement);
-						LOG.info(String.format("sixtySecondStatistics element %s moved from index: %s to index: %s", currentStatisticsElement, i, newStatSecondIndex));	
+						LOG.trace(String.format("sixtySecondStatistics element %s moved from index: %s to index: %s", currentStatisticsElement, i, newStatSecondIndex));	
 					} else {
-						LOG.info("Stats is now older than a min hence will be removed from vector: "+currentStatisticsElement);
+						LOG.trace(String.format("Stats is now older than a min hence will be removed from vector: %s", currentStatisticsElement));
 					}
 				}
 			}
-			LOG.info("sixtySecondUpdatedStatistics: "+ sixtySecondUpdatedStatistics);
+			LOG.trace(String.format("updated statistics vector: %s", sixtySecondUpdatedStatistics));
 			statisticsManager.setSixtySecondStatistics(sixtySecondUpdatedStatistics);
 			sixtySecondUpdatedStatistics = null;
 		}
