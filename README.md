@@ -49,10 +49,8 @@ This section will explain high level solution design for the given case.
 
 
 ### DataStructure
-Here is how our Statistics object look like:
 ![statsclassdiagram](https://github.com/maria-farooq/MyBank/blob/master/images/statsclassdiagram.png)
 
-Statistics Manager
 ![statisticsmanager](https://github.com/maria-farooq/MyBank/blob/master/images/statisticsmanager.png)
 
 - Above `sixtySecondStatisticsMetrics` is a **fixed sized** `Vector<Statistics>`.
