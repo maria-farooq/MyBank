@@ -60,15 +60,44 @@ This section will explain how we perform various operations on `Statistics Metri
 
 #### Get Statistics
 Get Statistics is need for our /statistics endpoint where user wants to see statistics of transactions happened in last 60 seconds.
+
+![getstatistics](https://github.com/maria-farooq/MyBank/blob/master/images/getstatistics.png)
+
 - since each index represents the **Statistics of transactions** happened in that indexed second.
 - We need to traverse and accumulate the complete metrics.
-- We 
 
-![getStatistics](https://github.com/maria-farooq/MyBank/blob/master/images/getstatistics.png)
+##### Time cost
+Since: we loop only for CONSTANT numbers (60)
+Hence:
+```
+O(1)
+```
 
-#### Handle new transaction
+##### Space cost
+Since: Our **Vector<Statistics>** at maximum will contain CONSTANT(60) elements
+  Hence:
+```
+O(1)
+```
 
 #### Keep Only 60 seconds Stats and discard older
+![updatestatistics](https://github.com/maria-farooq/MyBank/blob/master/images/updatestatistics.png)
+
+##### Time cost
+Since: we loop only for CONSTANT numbers (60)
+Hence:
+```
+O(1)
+```
+
+##### Space cost
+Since: Our operation will create a **Vector<Statistics>** which at maximum will contain CONSTANT(60) elements
+  Hence:
+```
+O(1)
+```
+
+#### Handle new transaction
 
 
 ## Acknowledgments
