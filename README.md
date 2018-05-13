@@ -47,19 +47,26 @@ mvn spring-boot:run
 ## Solution
 This section will explain high level solution design for the given case.
 
+
 ### DataStructure
-- Following `Statistics Metrics` is a **fixed sized** `Vector`.
+Here is how our Statistics object look like:
+![statsclassdiagram](https://github.com/maria-farooq/MyBank/blob/master/images/statsclassdiagram.png)
+
+Statistics Manager
+![statisticsmanager](https://github.com/maria-farooq/MyBank/blob/master/images/statisticsmanager.png)
+
+- Above `sixtySecondStatisticsMetrics` is a **fixed sized** `Vector<Statistics>`.
 - It can hold upto **Maximum 60 elements**.
 - Each index in Metrics represent each **Second** in past one minute.
 - Element at each index represents the **Statistics of transactions** happened in that indexed second.
 
-** Please note again the last point that this structure DOES NOT contain any transaction data.**
+**Please note again the last point that this structure DOES NOT contain any transaction data.**
 
 ### Operational details/cost on Statistics Metrics
 This section will explain how we perform various operations on `Statistics Metrics`.
 
 #### Get Statistics
-Get Statistics is need for our /statistics endpoint where user wants to see statistics of transactions happened in last 60 seconds.
+Get Statistics is needed for our `/statistics` endpoint where user wants to get statistics of transactions happened in last 60 seconds.
 
 ![getstatistics](https://github.com/maria-farooq/MyBank/blob/master/images/getstatistics.png)
 

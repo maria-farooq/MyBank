@@ -1,0 +1,13 @@
+@startuml
+
+skinparam componentStyle uml2
+class StatisticsManager {
+  ....
++Vector<Statistics> sixtySecondStatisticsMetrics;
++ final int maxElements = 60;
+  .. ..
+~getStatistics() { ... }
+~submitTransaction(Transaction t) { ... }
+}
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+
+skinparam componentStyle uml2
+class Statistics {
+  .. Fields ..
++sum
++avg
++min
++max
++count
+  .. ..
+~Statistics(): { sum, avg, min, max, count }
+}
+
+@enduml
