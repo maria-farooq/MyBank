@@ -64,7 +64,7 @@ Get Statistics is need for our /statistics endpoint where user wants to see stat
 - We need to traverse and accumulate the complete metrics.
 - We 
 
-![alt text](http://url/to/img.png)
+![getStatistics](https://github.com/maria-farooq/MyBank/blob/master/images/getstatistics.png)
 
 #### Handle new transaction
 
