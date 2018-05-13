@@ -44,6 +44,55 @@ To run the application from command line use [Spring Boot Maven plugin](https://
 mvn spring-boot:run
 ```
 
+## Solution
+This section will explain high level solution design for the given case.
+
+### DataStructure
+- Following `Statistics Metrics` is a **fixed sized** `Vector`.
+- It can hold upto **Maximum 60 elements**.
+- Each index in Metrics represent each **Second** in past one minute.
+- Element at each index represents the **Statistics of transactions** happened in that indexed second.
+
+** Please note again the last point that this structure DOES NOT contain any transaction data.**
+
+### Operational details/cost on Statistics Metrics
+This section will explain how we perform various operations on `Statistics Metrics`.
+
+#### Get Statistics
+Get Statistics is need for our /statistics endpoint where user wants to see statistics of transactions happened in last 60 seconds.
+- since each index represents the **Statistics of transactions** happened in that indexed second.
+- We need to traverse and accumulate the complete metrics.
+- We 
+
+@startuml
+
+title Get Statistics Algorithm
+
+start
+:{ sum, avg, min, max, count }\nindex = 0\ncurrIndexStats = metrix[index];
+
+repeat
+    if (currIndexStats.max > max) then (yes)
+        :max = currIndexStats.max;;
+    endif
+    if (currIndexStats.min > min) then (yes)
+        :min = currIndexStats.min;;
+    endif
+  :sum += currIndexStats.sum;;
+  :count ++;;
+repeat while (index++ < 60)
+
+stop
+:avg=sum/count;
+:return new Statistics(sum, avg, min, max, count);
+
+@enduml
+
+#### Handle new transaction
+
+#### Keep Only 60 seconds Stats and discard older
+
+
 ## Acknowledgments
 
-- Fill in acknowledgments here
+- To my beautiful family who supported me when I was working on this over the weekend.

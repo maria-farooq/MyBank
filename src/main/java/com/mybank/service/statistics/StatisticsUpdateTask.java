@@ -28,16 +28,18 @@ public class StatisticsUpdateTask {
 	StatisticsManager statisticsManager;
 
 	/**
-	 * We want statistics-vector (sixtySecondStatistics) to hold only statistics of last 60 seconds.
+	 * We want statistics-metrics (SixtySecondStatisticsMetrics) to hold only statistics of last 60 seconds.
 	 * After each passing second this method will update the index of statistics
 	 * in vector to the correct index as per current time.
-	 * This way a given statistics element will keep shifting in the vector until its older than 60 seconds. 
+	 * This way a given statistics element will keep shifting in the vector until its older than 60 seconds.
+	 * 
+	 *  </p> <b>Time cost</b> = since we loop around a constant number of elements (60) = <b>O(1)</b>
+	 *  </p> <b>Space cost</b> = since we can have constant number of elements (60) at max = <b>O(1)</b>
 	 */
 	@Scheduled(fixedRate = 1000)
 	private void shiftVectorStatistics() {
-		//StatisticsManager statisticsManager = StatisticsManager.getStatisticsManager();
-		Vector<Statistics> sixtySecondStatistics = statisticsManager.getsixtySecondStatisticsMetrics();
-		if(!statisticsManager.issixtySecondStatisticsMetricsEmpty()){
+		Vector<Statistics> sixtySecondStatistics = statisticsManager.getSixtySecondStatisticsMetrics();
+		if(!statisticsManager.isSixtySecondStatisticsMetricsEmpty()){
 			Vector<Statistics> sixtySecondUpdatedStatistics = new Vector<>(statisticsManager.getSeconds());
 			
 			for (int i=0; i<=statisticsManager.getSeconds(); i++) sixtySecondUpdatedStatistics.add(i, null);
@@ -56,7 +58,7 @@ public class StatisticsUpdateTask {
 				}
 			}
 			LOG.trace(String.format("updated statistics vector: %s", sixtySecondUpdatedStatistics));
-			statisticsManager.setsixtySecondStatisticsMetrics(sixtySecondUpdatedStatistics);
+			statisticsManager.setSixtySecondStatisticsMetrics(sixtySecondUpdatedStatistics);
 			sixtySecondUpdatedStatistics = null;
 		}
 	}

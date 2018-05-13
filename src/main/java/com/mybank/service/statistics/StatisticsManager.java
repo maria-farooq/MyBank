@@ -14,8 +14,7 @@ import com.mybank.datatransferobject.Transaction;
 
 /**
  * StatisticsManager manages the transactions of last 60 seconds;
- * This class was initially intended to be a java singleton class.
- * Later I decided on keeping it singleton at spring context level to support various test scenarios.
+ * This class spring singleton
  * So that we have common sixtySecondStatisticsMetrics on application context level
  * 
  * @author mariafarooq
@@ -25,10 +24,12 @@ import com.mybank.datatransferobject.Transaction;
 public class StatisticsManager {
 
 	private static Logger LOG = LoggerFactory.getLogger(StatisticsManager.class);
-	private final int seconds = 59; 
+	private final int seconds = 59;
+
 	/**
-	 * Each index represent a second in last one minute.
-	 * and it will contain statistics of transactions happened in that second.
+	 * Each index in sixtySecondStatisticsMetrics represent a second in past one minute.
+	 * and each element represents the statistics of transactions happened in that indexed second.
+	 * </p> Hence sixtySecondStatisticsMetrics will always contain 60 elements at MAX.
 	 * </p>Space cost is constant 60 units of elements.
 	 */
 	private Vector<Statistics> sixtySecondStatisticsMetrics = new Vector<>(seconds);
@@ -51,11 +52,26 @@ public class StatisticsManager {
 		for (int i=0; i<=seconds; i++) sixtySecondStatisticsMetrics.add(i, null);
 	}
 
-	void setsixtySecondStatisticsMetrics(Vector<Statistics> sixtySecondStatisticsMetrics) {
+	/**
+	 * Each index in sixtySecondStatisticsMetrics represent a second in past one minute.
+	 * and each element represents the statistics of transactions happened in that indexed second.
+	 * </p> Hence sixtySecondStatisticsMetrics will always contain 60 elements at MAX.
+	 * 
+	 * @param sixtySecondStatisticsMetrics
+	 */
+	void setSixtySecondStatisticsMetrics(Vector<Statistics> sixtySecondStatisticsMetrics) {
 		this.sixtySecondStatisticsMetrics = sixtySecondStatisticsMetrics;
 	}
 
-	public Vector<Statistics> getsixtySecondStatisticsMetrics() {
+	/**
+	 * Each index in sixtySecondStatisticsMetrics represent a second in past one minute.
+	 * and each element represents the statistics of transactions happened in that indexed second.
+	 * </p> Hence sixtySecondStatisticsMetrics will always contain 60 elements at MAX.
+	 * 
+	 * @return
+	 * SixtySecondStatisticsMetrics
+	 */
+	public Vector<Statistics> getSixtySecondStatisticsMetrics() {
 		return sixtySecondStatisticsMetrics;
 	}
 
@@ -63,7 +79,12 @@ public class StatisticsManager {
 		return seconds;
 	}
 	
-	public boolean issixtySecondStatisticsMetricsEmpty() {
+	/**
+	 * @return
+	 * true: if metrics is null, empty or contains null at each element.
+	 * </p>false: otherwise
+	 */
+	public boolean isSixtySecondStatisticsMetricsEmpty() {
 		if(sixtySecondStatisticsMetrics == null || sixtySecondStatisticsMetrics.isEmpty())
 			return true;
 		for(int i=0; i<= seconds; i++){
@@ -74,8 +95,12 @@ public class StatisticsManager {
 	}
 
 	/**
-	 * Traverse the vector and calculate statistics
-	 * </p> time cost is: size of the vector = 60 constant units. O(1)
+	 * Traverse the sixtySecondStatisticsMetrics (Vector) and calculate statistics.
+	 * </p>sixtySecondStatisticsMetrics will always contain 60 elements at MAX,
+	 * given each index in sixtySecondStatisticsMetrics represent a second in past one minute.
+	 * and each element represents the statistics of transactions happened in indexed second.
+	 * </p> <b>Time cost is: size of the vector = 60 constant units. O(1)</b>
+	 * </p>
 	 * @return
 	 * Statistics
 	 */
